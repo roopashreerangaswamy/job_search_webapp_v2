@@ -50,15 +50,7 @@
   <div class="row g-4">
 
     {% for job in jobs %}
-    <div class="col-md-4">
-      <div class="border rounded p-3 h-100">
-        <h5>{{ job.title }}</h5>
-        <p class="mb-1"><strong>Company:</strong> {{ job.company }}</p>
-        <p class="mb-1"><strong>Location:</strong> {{ job.location }}</p>
-        <p class="mb-2"><strong>Type:</strong> {{ job.type }}</p>
-        <a href="#" class="btn btn-outline-primary btn-sm">Apply Now</a>
-      </div>
-    </div>
+      {% include 'jobitem.html' %}
     {% endfor %}
 
   </div>
