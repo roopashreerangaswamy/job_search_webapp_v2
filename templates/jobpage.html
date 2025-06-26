@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ job.title }} at {{ job.company }}</title>
+  {% include 'bootstrap.html' %}
+  <style>
+    /* RESET unwanted margin */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: system-ui, sans-serif;
+    }
+
+    header {
+      position: fixed;
+      width: 100%;
+      z-index: 1030;
+    }
+
+    .spacer {
+      height: 60px; /* Same as navbar height */
+    }
+
+    .banner {
+      background-image: url("/static/banner.jpg");
+      background-size: cover;
+      background-position: center;
+      height: 50vh;
+      width: 100%;
+    }
+
+    main {
+      padding: 2rem;
+      background: white;
+    }
+
+    footer {
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'nav.html' %}
+
+  <div class="spacer"></div>
+  <div class="banner"></div>
+
+  <main class="container">
+    <h2>{{ job.title }}</h2>
+    <h5 class="text-muted">{{ job.company }}</h5>
+    <p><strong>Location:</strong> {{ job.location }}</p>
+    <p><strong>Job Type:</strong> {{ job.job_type }}</p>
+    <p><strong>Salary:</strong> {{ job.currency }} {{ job.salary }}</p>
+
+    <hr>
+    <h4>Responsibilities</h4>
+    <ul>
+      {% for responsibility in job.responsibilities.split('\n') %}
+        <li>{{ responsibility }}</li>
+      {% endfor %}
+    </ul>
+
+    <h4>Requirements</h4>
+    <ul>
+      {% for requirement in job.requirements.split('\n') %}
+        <li>{{ requirement }}</li>
+      {% endfor %}
+    </ul>
+
+    <a href="#" class="btn btn-primary mt-3">Apply Now</a>
+    <a href="/" class="btn btn-secondary mt-3">Back to Listings</a>
+  </main>
+
+  {% include 'footer.html' %}
+
+</body>
+</html>
