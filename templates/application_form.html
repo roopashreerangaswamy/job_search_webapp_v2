@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Apply for {{ job.title }} at {{ job.company }}</title>
+  {% include 'bootstrap.html' %}
+  <style>
+    body {
+      padding-top: 70px;
+      background-color: #f4f4f4;
+    }
+    .form-section {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'nav.html' %}
+
+  <div class="container mt-5">
+    <div class="form-section">
+      <h2>Apply for {{ job.title }}</h2>
+      <p class="text-muted">at {{ job.company }}</p>
+
+      <form method="post" action="/job/{{ job.id }}/apply">
+        <div class="mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g., Ashok Kumar" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" name="email" class="form-control" placeholder="e.g., ashok.kumar@example.com" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="linkedin" class="form-label">LinkedIn Profile (optional)</label>
+          <input type="url" name="linkedin" class="form-control" placeholder="e.g., https://linkedin.com/in/ashok-kumar">
+        </div>
+
+        <div class="mb-3">
+          <label for="education" class="form-label">Education</label>
+          <textarea name="education" class="form-control" rows="2" placeholder="e.g., B.E. in Computer Science, VTU, 2024 pass-out"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="workexp" class="form-label">Work Experience</label>
+          <textarea name="workexp" class="form-control" rows="3" placeholder="e.g., 1-year internship at CodeWorks as a Backend Developer"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="reason" class="form-label">Why should we hire you?</label>
+          <textarea name="reason" class="form-control" rows="4" placeholder="e.g., I’m passionate about backend development and quick at learning new tech. Built 3 Python-Flask apps during college." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+        <a href="/" class="btn btn-secondary">Back</a>
+      </form>
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+</body>
+</html>

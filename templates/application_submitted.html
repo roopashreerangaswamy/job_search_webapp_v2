@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Application Submitted</title>
+  {% include 'bootstrap.html' %}
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      padding-top: 70px; /* Push content below fixed navbar */
+    }
+
+    .confirmation {
+      max-width: 700px;
+      margin: auto;
+      background: #e8f5e9;
+      padding: 30px;
+      border-radius: 8px;
+      border: 1px solid #c8e6c9;
+    }
+  </style>
+</head>
+<body>
+  {% include 'nav.html' %}
+
+  <main>
+    <div class="container">
+      <div class="confirmation">
+        <h2>Thank you, {{ application.name }}!</h2>
+        <p>You have successfully applied for <strong>{{ job.title }}</strong> at <strong>{{ job.company }}</strong>.</p>
+
+        <h5 class="mt-4">Your Submitted Information:</h5>
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Email:</strong> {{ application.email }}</li>
+          <li class="list-group-item"><strong>LinkedIn:</strong> {{ application.linkedin or "N/A" }}</li>
+          <li class="list-group-item"><strong>Education:</strong> {{ application.education or "N/A" }}</li>
+          <li class="list-group-item"><strong>Work Experience:</strong> {{ application.workexp or "N/A" }}</li>
+          <li class="list-group-item"><strong>Why Hire Me:</strong> {{ application.reason }}</li>
+        </ul>
+
+        <a href="/" class="btn btn-success mt-4">Back to Home</a>
+      </div>
+    </div>
+  </main>
+
+  {% include 'footer.html' %}
+</body>
+</html>
