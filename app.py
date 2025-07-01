@@ -42,6 +42,13 @@ def apply_to_job(id):
         return render_template("application_submitted.html", application=application_data, job=job)
 
     return render_template("application_form.html", job=job)
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
 
 
 if __name__ == '__main__':

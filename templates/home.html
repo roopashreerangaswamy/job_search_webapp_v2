@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  {%include 'bootstrap.html' %}
-  <title>Careers Website</title>
+  {% include 'bootstrap.html' %}
+  <title>HireBridge – Your Bridge to Better Hiring</title>
   <style>
     body {
       padding-top: 56px; /* Push entire page content down */
@@ -19,34 +19,50 @@
       justify-content: center;
       text-align: center;
     }
+
     .hero h1 {
       font-size: 3rem;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    .hero span.brand {
+      color: #FACC15; /* Yellow for "HireBridge" */
+      font-weight: bold;
+    }
+
+    .btn-brand {
+      background-color: #FACC15;
+      color: #111827;
+      font-weight: 600;
+      border: none;
+    }
+
+    .btn-brand:hover {
+      background-color: #eab308;
+      color: black;
     }
   </style>
 </head>
 <body>
-  {%include 'nav.html' %}
-<section class="hero">
-  <div>
-    <h1>Find Your Dream Job</h1>
-    <p class="lead">Thousands of opportunities await</p>
-    <a href="#" class="btn btn-light mt-3">Browse Jobs</a>
-  </div>
-</section>
+  {% include 'nav.html' %}
 
-<section class="container my-5">
-  <h2 class="text-center mb-4">Latest Openings</h2>
-  <div class="row g-4">
+  <section class="hero">
+    <div>
+      <h1>Welcome to <span class="brand">HireBridge</span></h1>
+      <p class="lead">Your Bridge to Better Hiring</p>
+      <a href="#jobs" class="btn btn-brand mt-3">Browse Jobs</a>
+    </div>
+  </section>
 
-    {% for job in jobs %}
-      {% include 'jobitem.html' %}
-    {% endfor %}
+  <section id="jobs" class="container my-5">
+    <h2 class="text-center mb-4">Latest Openings</h2>
+    <div class="row g-4">
+      {% for job in jobs %}
+        {% include 'jobitem.html' %}
+      {% endfor %}
+    </div>
+  </section>
 
-  </div>
-</section>
-
-{%include 'footer.html' %}
-
+  {% include 'footer.html' %}
 </body>
 </html>
