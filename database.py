@@ -10,6 +10,7 @@ db = client["hirebridge"]
 
 # ---------------------- JOB FUNCTIONS ----------------------
 
+
 def load_jobs_from_db():
     jobs = list(db.jobs.find({}, {"_id": 0}))  # exclude _id for clean output
     return jobs
@@ -24,7 +25,9 @@ def add_application_to_db(job_id, data):
     data["job_id"] = int(job_id)
     db.applications.insert_one(data)
 
+
 # ---------------------- USER FUNCTIONS ----------------------
+
 
 def add_user_to_db(name, email, hashed_password):
     db.users.insert_one({
@@ -38,15 +41,13 @@ def get_user_by_email(email):
     user = db.users.find_one({"email": email}, {"_id": 0})
     return user
 
+
 # ---------------------- RECRUITER FUNCTIONS ----------------------
+
 
 def add_pending_recruiter_to_db(name, email, hashed_password, company_name):
     # Step 1: Add user
-    user = {
-        "name": name,
-        "email": email,
-        "password": hashed_password
-    }
+    user = {"name": name, "email": email, "password": hashed_password}
     result = db.users.insert_one(user)
     user_id = result.inserted_id  # MongoDB's ObjectId
 
@@ -60,38 +61,37 @@ def add_pending_recruiter_to_db(name, email, hashed_password, company_name):
 
 
 def get_pending_recruiters():
-    recruiters = db.recruiters.aggregate([
-        {
-            "$match": {"status": "pending"}
-        },
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "user_id",
-                "foreignField": "_id",
-                "as": "user_info"
-            }
-        },
-        {
-            "$unwind": "$user_info"
-        },
-        {
-            "$project": {
-                "id": {"$toString": "$_id"},
-                "name": "$user_info.name",
-                "email": "$user_info.email",
-                "company_name": 1
-            }
+    recruiters = db.recruiters.aggregate([{
+        "$match": {
+            "status": "pending"
         }
-    ])
+    }, {
+        "$lookup": {
+            "from": "users",
+            "localField": "user_id",
+            "foreignField": "_id",
+            "as": "user_info"
+        }
+    }, {
+        "$unwind": "$user_info"
+    }, {
+        "$project": {
+            "id": {
+                "$toString": "$_id"
+            },
+            "name": "$user_info.name",
+            "email": "$user_info.email",
+            "company_name": 1
+        }
+    }])
     return list(recruiters)
 
 
 def update_recruiter_status(recruiter_id, new_status):
-    db.recruiters.update_one(
-        {"_id": ObjectId(recruiter_id)},
-        {"$set": {"status": new_status}}
-    )
+    db.recruiters.update_one({"_id": ObjectId(recruiter_id)},
+                             {"$set": {
+                                 "status": new_status
+                             }})
 
 
 def is_recruiter_approved(user_id):
