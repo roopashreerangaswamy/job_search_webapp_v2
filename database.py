@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 import os
 
 # Replace with your actual MongoDB URI
-MONGO_URI = os.environ.get('db_connection_str')
+MONGO_URI = os.environ('db_connection_str')
 
 client = MongoClient(MONGO_URI)
 db = client["hirebridge"]
