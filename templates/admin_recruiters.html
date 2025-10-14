@@ -1,0 +1,35 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Recruiter Approval Dashboard</h2>
+
+  {% if recruiters %}
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Company</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recruiters %}
+          <tr>
+            <td>{{ r.name }}</td>
+            <td>{{ r.email }}</td>
+            <td>{{ r.company_name }}</td>
+            <td>
+              <a href="{{ url_for('recruiter_action', recruiter_id=r.id, action='approved') }}" class="btn btn-success btn-sm">Approve</a>
+              <a href="{{ url_for('recruiter_action', recruiter_id=r.id, action='rejected') }}" class="btn btn-danger btn-sm">Reject</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-center">No pending recruiter requests.</p>
+  {% endif %}
+</div>
+{% endblock %}

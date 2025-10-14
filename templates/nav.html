@@ -11,17 +11,40 @@
   .navbar a:hover {
     text-decoration: underline;
   }
+
+  .navbar .welcome-text {
+    margin-right: 1rem;
+    font-weight: 500;
+    color: #FACC15; /* gold */
+  }
 </style>
 
 <header class="bg-dark text-white py-3 fixed-top navbar">
   <div class="container d-flex justify-content-between align-items-center">
     <a href="/" class="h4 m-0 decoration-none navbar-brand-highlight">HireBridge</a>
-    <nav>
-      <a href="/" class="text-white me-3 text-decoration-none">Home</a>
-      <a href="#jobs" class="text-white me-3 text-decoration-none">Jobs</a>
-      <a href="/login" class="text-white me-3 text-decoration-none">Login</a>
-      <a href="/register" class="text-white me-3 text-decoration-none">Register</a>
-      <a href="mailto:email@example.com?subject=Mail your Queries here" class="text-white text-decoration-none">Contact Us</a>
-    </nav>
+
+    <div class="d-flex align-items-center">
+      <nav class="me-3">
+        <a href="/" class="text-white me-3 text-decoration-none">Home</a>
+        <a href="#jobs" class="text-white me-3 text-decoration-none">Jobs</a>
+        <a href="mailto:email@example.com?subject=Mail your Queries here" class="text-white me-3 text-decoration-none">Contact Us</a>
+
+        <!-- 🧑‍💼 Recruiter-specific links -->
+        {% if session.get('user_role') == 'recruiter' and session.get('recruiter_status') == 'approved' %}
+          <a href="/recruiter_dashboard" class="text-white me-3 text-decoration-none">Recruiter Dashboard</a>
+        {% endif %}
+
+        <!-- 🌟 Visible to everyone -->
+        <a href="/recruiter_register" class="text-white me-3 text-decoration-none">For Recruiters</a>
+      </nav>
+
+      {% if session.get('user_name') %}
+        <span class="welcome-text">Welcome, {{ session['user_name'] }} 👋</span>
+        <a href="/logout" class="text-white text-decoration-none">Logout</a>
+      {% else %}
+        <a href="/login" class="text-white me-3 text-decoration-none">Login</a>
+        <a href="/register" class="text-white text-decoration-none">Register</a>
+      {% endif %}
+    </div>
   </div>
 </header>

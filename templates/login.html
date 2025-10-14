@@ -1,1 +1,49 @@
-<h2>Login Page Coming Soon</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include 'bootstrap.html' %}
+  <title>Login | HireBridge</title>
+  <style>
+    body {
+      padding-top: 56px;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 60px auto;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  {% include 'nav.html' %}
+
+  <main class="flex-fill">
+    <div class="container">
+      <div class="login-container">
+        <h2 class="text-center mb-4">Login to HireBridge</h2>
+        <form method="post" action="/login">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  {% include 'footer.html' %}
+
+</body>
+</html>
