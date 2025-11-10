@@ -1,10 +1,9 @@
 from flask import Flask, render_template, jsonify, request,redirect,flash, session, url_for
 from database import db,load_jobs_from_db , load_job_from_db, add_application_to_db, add_user_to_db, get_user_by_email, add_pending_recruiter_to_db, get_pending_recruiters,update_recruiter_status, is_recruiter_approved, get_recruiter_by_email
 from werkzeug.security import generate_password_hash, check_password_hash
-from bson.objectid import ObjectId
 import sqlalchemy.exc
 import os
-
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
