@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request,redirect,flash, session, url_for
-from database import load_jobs_from_db , load_job_from_db, add_application_to_db, add_user_to_db, get_user_by_email, add_pending_recruiter_to_db, get_pending_recruiters,update_recruiter_status, is_recruiter_approved
+from database import db,load_jobs_from_db , load_job_from_db, add_application_to_db, add_user_to_db, get_user_by_email, add_pending_recruiter_to_db, get_pending_recruiters,update_recruiter_status, is_recruiter_approved, get_recruiter_by_email
 from werkzeug.security import generate_password_hash, check_password_hash
+from bson.objectid import ObjectId
 import sqlalchemy.exc
 import os
 
@@ -66,26 +67,37 @@ def apply_to_job(id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+
+        # 🚨 Check for empty fields
+        if not email or not password:
+            flash('Please enter both email and password.', 'danger')
+            return redirect('/login')
 
         user = get_user_by_email(email)
+
+        # 🚨 Check if user exists and password matches
         if user and check_password_hash(user['password'], password):
-            session['user_id'] = user['id']
-            session['user_name'] = user['name']
-            session['role'] = user['role']  # ✅ Fix here
+            session['user_id'] = str(user.get('_id', ''))
+            session['user_name'] = user.get('name', 'User')
+            session['role'] = user.get('role', 'user')
+
             flash('Login successful!', 'success')
+
+            # ✅ Redirect based on role
             if session['role'] == 'recruiter':
                 return redirect('/recruiter/dashboard')
+            elif session['role'] == 'admin':
+                return redirect('/admin/dashboard')
             else:
                 return redirect('/')
-
-            
         else:
-            flash('Invalid credentials. Please try again.', 'danger')
+            flash('Invalid email or password.', 'danger')
             return redirect('/login')
 
     return render_template('login.html')
+
     
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -104,6 +116,12 @@ def register():
             return redirect('/register')
 
     return render_template('register.html')
+
+
+@app.route('/for_recruiters')
+def for_recruiters():
+    return render_template('for_recruiters.html')
+
 
 
 @app.route('/recruiter_register', methods=['GET', 'POST'])
@@ -133,19 +151,100 @@ def recruiter_register():
     return render_template('recruiter_register.html')
 
 
+@app.route('/recruiter_login', methods=['GET', 'POST'])
+def recruiter_login():
+    error = None
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        print("--- DEBUG recruiter_login ---")
+        print(f"Email entered: {email}")
+        print(f"Password entered: {bool(password)}")
+
+        recruiter = db.recruiters.find_one({"email": email})
+        print(f"Recruiter fetched from DB: {recruiter}")
+
+        if recruiter:
+            if check_password_hash(recruiter['password'], password or ""):
+                if recruiter.get('status') == 'approved':
+                    session['recruiter_email'] = recruiter['email']
+                    session['recruiter_name'] = recruiter['name']
+                    session['role'] = 'recruiter'
+                    session['recruiter_status'] = "approved"
+                    return redirect('/recruiter_dashboard')
+                else:
+                    return render_template('recruiter_pending.html', recruiter=recruiter)  
+            else:
+                error = "❌ Invalid password. Please try again."
+        else:
+            error = "⚠️ Recruiter not found. Please check your email."
+
+
+    return render_template('recruiter_login.html', error=error)
+
+
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    error = None
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        admin = db.admins.find_one({"email": email})
+        if admin and check_password_hash(admin['password'], password or ""):
+            session['admin_email'] = admin['email']
+            session['admin_name'] = admin.get('name', 'Admin')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            error = "Invalid credentials."
+    return render_template('admin_login.html', error=error)
+
+
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    if 'admin_email' not in session:
+        return redirect(url_for('admin_login'))
+    pending_recruiters = list(db.recruiters.find({"status": "pending"}))
+    return render_template('admin_dashboard.html', recruiters=pending_recruiters)
+
+
+
+@app.route('/approve_recruiter/<recruiter_id>', methods=['POST'])
+def approve_recruiter(recruiter_id):
+    if 'admin_email' not in session:
+        return redirect(url_for('admin_login'))
+    db.recruiters.update_one({"_id": ObjectId(recruiter_id)}, {"$set": {"status": "approved"}})
+    flash("Recruiter approved.", "success")
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/reject_recruiter/<recruiter_id>', methods=['POST'])
+def reject_recruiter(recruiter_id):
+    if 'admin_email' not in session:
+        return redirect(url_for('admin_login'))
+    db.recruiters.update_one({"_id": ObjectId(recruiter_id)}, {"$set": {"status": "rejected"}})
+    flash("Recruiter rejected.", "danger")
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('admin_email', None)
+    session.pop('admin_name', None)
+    flash("Admin logged out.", "info")
+    return redirect(url_for('admin_login'))
+
+
 
 @app.route('/recruiter_dashboard')
 def recruiter_dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if session.get('role') != 'recruiter' or session.get('recruiter_status') != 'approved':
+        flash("Access denied. Only approved recruiters can view this page.", "danger")
+        return redirect(url_for('recruiter_login'))
 
-    user_id = session['user_id']
+    return render_template('recruiter_dashboard.html', name=session.get('user_name'))
 
-    if not is_recruiter_approved(user_id):
-        return render_template('recruiter_pending.html')
-
-    # ✅ Continue loading recruiter dashboard
-    return render_template('recruiter_dashboard.html')
 
 
 
@@ -154,16 +253,7 @@ def recruiter_pending():
     return render_template('recruiter_pending.html')
 
 
-@app.route('/admin_recruiters')
-def admin_recruiters():
-    recruiters = get_pending_recruiters()
-    return render_template("admin_recruiters.html", recruiters=recruiters)
 
-@app.route('/admin/recruiters/<int:recruiter_id>/<string:action>')
-def recruiter_action(recruiter_id, action):
-    if action in ["approved", "rejected"]:
-        update_recruiter_status(recruiter_id, action)
-    return redirect(url_for('admin_recruiters'))
 
 
 @app.route('/logout')
