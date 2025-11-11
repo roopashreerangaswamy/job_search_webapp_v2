@@ -1,37 +1,51 @@
+# 💼 JobFinder – Flask-Based Careers Website (v2.0)
 
-# 💼 JobFinder – Flask-Based Careers Website
-
-A full-stack web application that allows companies to post job listings and users to view job details and apply directly via an application form.
+A full-stack web application that connects recruiters and job seekers — enabling recruiters to post jobs (after admin approval) and candidates to browse, apply, and manage applications.
 
 ---
 
 ## 🌐 Live Demo
 
-👉 [Check out the live site here](https://job-search-webapp-v2.onrender.com/)
+👉 [View the deployed site on Render](https://job-search-webapp-v2.onrender.com/)
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
-- 🔍 View all job openings with dynamic pages
-- 📄 See detailed job descriptions (title, location, salary, etc.)
-- 📝 Apply to any job via a structured application form
-- 💾 Store applications in a MySQL database
-- 📦 Backend built with Python & Flask
-- 🎨 Frontend styled with Bootstrap 5
-- ✅ Fully dynamic, database-connected website
+### 👩‍💻 For Candidates
+- 🔍 **View All Job Listings** — dynamically loaded from the database  
+- 📄 **Detailed Job Pages** — title, location, salary, company, and requirements  
+- 📝 **Apply to Jobs** — via an interactive application form  
+- 💾 **Applications Stored Securely** in MongoDB  
+- 📨 **View Application Status** (Approved/Rejected by Recruiter)
+
+---
+
+### 🧑‍💼 For Recruiters
+- 🏢 **Recruiter Signup & Login** — secure registration with company details  
+- 🧾 **Post Job Listings** — create and manage openings easily  
+- ✏️ **Edit / Delete Jobs** — maintain listings dynamically  
+- ⏳ **Admin Approval System** — recruiters must be approved by the admin before posting jobs  
+- 📬 **View Applications Received** — see who applied to your posted jobs  
+
+---
+
+### 🧑‍💻 For Admin
+- ✅ **Approve / Reject Recruiters** before they gain access  
+- 🗂️ **Monitor Job Postings & Applications**  
+- 🧹 **Delete Recruiters / Jobs / Applications** as needed  
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Layer      | Technology        |
-|------------|-------------------|
-| Backend    | Python, Flask     |
-| Frontend   | HTML, CSS, Bootstrap |
-| Database   | MySQL             |
-| ORM        | SQLAlchemy (text-based) |
-| Deployment | Replit / Railway / Render (optional) |
+|-------------|-------------------|
+| Backend     | Python (Flask)    |
+| Frontend    | HTML, CSS, Bootstrap 5 |
+| Database    | MongoDB (Atlas)   |
+| Authentication | Flask Sessions |
+| Deployment  | Render            |
 
 ---
 
@@ -39,116 +53,88 @@ A full-stack web application that allows companies to post job listings and user
 
 ```
 jobfinder/
-├── app.py                # Main Flask app with route handling
-├── database.py           # DB interaction logic (jobs & applications)
-├── templates/            # HTML templates (Jinja2)
+├── app.py                       # Main Flask app & routes
+├── database.py                  # MongoDB connection and operations
+├── templates/                   # Jinja2 templates
 │   ├── home.html
 │   ├── jobpage.html
+│   ├── recruiter_register.html
+│   ├── recruiter_dashboard.html
+│   ├── admin_dashboard.html
 │   ├── application_form.html
-│   ├── application_submitted.html
-│   ├── nav.html
-│   └── footer.html
-├── static/               # Images, CSS, other static assets
-│   └── banner.jpg
-├── requirements.txt      # Python dependencies
-└── README.md             # This file
+│   └── application_submitted.html
+├── static/                      # CSS, images, JS files
+│   └── style.css
+├── requirements.txt
+└── README.md
 ```
 
 ---
-
-
 
 ## 🧠 How It Works
 
-### 🔗 View Jobs
+### 🏠 Home Page (Jobs for Candidates)
 ```python
 @app.route("/")
 def home():
-    jobs = load_jobs_from_db()
+    jobs = jobs_collection.find({})
     return render_template("home.html", jobs=jobs)
 ```
 
-### 📄 View Single Job
+### 💼 Recruiter Registration
 ```python
-@app.route("/job/<int:id>")
-def job_detail(id):
-    job = load_job_from_db(id)
-    return render_template("jobpage.html", job=job)
-```
-
-### ✍️ Apply to a Job
-```python
-@app.route("/job/<int:id>/apply", methods=["GET", "POST"])
-def apply_to_job(id):
+@app.route("/recruiter/register", methods=["GET", "POST"])
+def recruiter_register():
     if request.method == "POST":
-        # Save application to DB
+        recruiters_collection.insert_one({...})
+```
+
+### 🔑 Admin Approval Flow
+```python
+@app.route("/admin/approve/<id>")
+def approve_recruiter(id):
+    recruiters_collection.update_one({"_id": ObjectId(id)}, {"$set": {"approved": True}})
+```
+
+### 🗑️ Job Deletion
+```python
+@app.route("/delete_job/<id>")
+def delete_job(id):
+    jobs_collection.delete_one({"_id": ObjectId(id)})
 ```
 
 ---
 
-## 🧪 Sample SQL Tables
+## ✅ Current Status
 
-### `jobs` Table
-```sql
-CREATE TABLE jobs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(250),
-  location VARCHAR(250),
-  salary INT,
-  currency VARCHAR(10),
-  company VARCHAR(100),
-  job_type VARCHAR(50),
-  responsibilities TEXT,
-  requirements TEXT
-);
-```
-
-### `applications` Table
-```sql
-CREATE TABLE applications (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  job_id INT,
-  name VARCHAR(100),
-  email VARCHAR(100),
-  linkedin VARCHAR(200),
-  education TEXT,
-  workexp TEXT,
-  reason TEXT
-);
-```
+- [x] Job listings & details  
+- [x] Application form (MongoDB integrated)  
+- [x] Recruiter registration & login  
+- [x] Admin approval flow  
+- [x] Job posting + deletion  
+- [x] Deployed on Render  
 
 ---
 
-## ✅ Status
+## 🧩 Upcoming Enhancements
 
-- [x] Job listings
-- [x] Job detail pages
-- [x] Application form (with validation)
-- [x] Store applications in MySQL
-- [x] Clean UI with Bootstrap
-
----
-
-## 🧩 Future Improvements
-
-- Admin dashboard to view all applications
-- Resume file upload support
-- Authentication for employers/applicants
-- Email confirmation on application
-- Add search & filter by location/job type
+- 📎 Resume upload & download feature  
+- 🔍 Search & filter jobs by location or type  
+- ✉️ Email notifications (on approval/application)  
+- 📊 Recruiter analytics dashboard  
 
 ---
 
-## 👩‍💻 Made With
+## 👩‍💻 Built With
 
-Flask, MySQL, Bootstrap, and a **lot of 💪 learning!**
+Flask • MongoDB • Bootstrap 5 • Render • ❤️ and sleepless debugging nights
 
 ---
 
 ## 📬 Contact
 
-Built by **Roopashree.R**  
-📧 roopashree.r2004@gmail.com  
-🌐 [https://www.linkedin.com/in/roopashree-r-66848b286?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app]
+**Roopashree R**  
+📧 [roopashree.r2004@gmail.com](mailto:roopashree.r2004@gmail.com)  
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/roopashree-r-66848b286)
 
 ---
