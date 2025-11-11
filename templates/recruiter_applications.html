@@ -50,7 +50,7 @@
               <td>{{ app.workexp }}</td>
               <td>{{ app.reason }}</td>
               <td>
-                <form action="{{ url_for('delete_application', app_id=app._id) }}" method="POST" style="display:inline;">
+                <form action="{{ url_for('delete_application', app_id=app._id, job_id=job._id) }}" method="POST" style="display:inline;">
                   <button class="btn btn-sm btn-danger">Delete</button>
                 </form>
               </td>
