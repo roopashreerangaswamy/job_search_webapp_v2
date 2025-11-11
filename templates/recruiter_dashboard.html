@@ -9,49 +9,76 @@
 <body class="bg-light">
 
   <div class="container py-5">
-    <h2 class="text-center mb-4">Welcome, {{ session.recruiter_name }}</h2>
-    <a href="/logout" class="btn btn-outline-secondary float-end mb-3">Logout</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Welcome, {{ session.recruiter_name }}</h2>
+      <a href="/logout" class="btn btn-outline-secondary">Logout</a>
+    </div>
 
     <!-- Add New Job -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header bg-primary text-white">
+      <div class="card-header bg-primary text-white fw-semibold">
         Add New Job
       </div>
       <div class="card-body">
         <form action="{{ url_for('add_job') }}" method="POST">
-          <div class="mb-3">
-            <label class="form-label">Job Title</label>
-            <input type="text" name="title" class="form-control" required>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Job Title</label>
+              <input type="text" name="title" class="form-control" required>
+            </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Location</label>
-            <input type="text" name="location" class="form-control" required>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Location</label>
+              <input type="text" name="location" class="form-control" required>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Job Type</label>
+              <input type="text" name="job_type" class="form-control" placeholder="e.g. Full-time" required>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Currency</label>
+              <input type="text" name="currency" class="form-control" placeholder="INR / USD" required>
+            </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Salary</label>
-            <input type="text" name="salary" class="form-control" required>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Salary</label>
+              <input type="number" name="salary" class="form-control" placeholder="50000" required>
+            </div>
           </div>
+
           <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3" required></textarea>
+            <label class="form-label">Responsibilities</label>
+            <textarea name="responsibilities" class="form-control" rows="3" placeholder="List key responsibilities (one per line)" required></textarea>
           </div>
-          <button type="submit" class="btn btn-success">Add Job</button>
+
+          <div class="mb-3">
+            <label class="form-label">Requirements</label>
+            <textarea name="requirements" class="form-control" rows="3" placeholder="List required skills/experience (one per line)" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100">Post Job</button>
         </form>
       </div>
     </div>
 
     <!-- Manage Posted Jobs -->
     <div class="card shadow-sm">
-      <div class="card-header bg-dark text-white">
+      <div class="card-header bg-dark text-white fw-semibold">
         Your Posted Jobs
       </div>
       <div class="card-body">
         {% if jobs %}
-          <table class="table table-striped">
+          <table class="table table-hover align-middle">
             <thead>
               <tr>
                 <th>Title</th>
+                <th>Company</th>
                 <th>Location</th>
+                <th>Type</th>
                 <th>Salary</th>
                 <th>Actions</th>
               </tr>
@@ -60,11 +87,13 @@
               {% for job in jobs %}
                 <tr>
                   <td>{{ job.title }}</td>
+                  <td>{{ job.company }}</td>
                   <td>{{ job.location }}</td>
-                  <td>{{ job.salary }}</td>
+                  <td>{{ job.job_type }}</td>
+                  <td>{{ job.currency }} {{ job.salary }}</td>
                   <td>
                     <a href="{{ url_for('view_applications', job_id=job._id) }}" class="btn btn-sm btn-info">Applications</a>
-                    <form action="{{ url_for('delete_job_route', job_id=job._id) }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('delete_job_route', job_id=job._id) }}" method="POST" class="d-inline">
                       <button class="btn btn-sm btn-danger">Delete</button>
                     </form>
                   </td>
@@ -73,7 +102,7 @@
             </tbody>
           </table>
         {% else %}
-          <p class="text-muted">You haven’t posted any jobs yet.</p>
+          <p class="text-muted text-center">You haven’t posted any jobs yet.</p>
         {% endif %}
       </div>
     </div>

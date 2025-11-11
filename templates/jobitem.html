@@ -5,6 +5,10 @@
     <p class="mb-1"><strong>Location:</strong> {{ job.location }}</p>
     <p class="mb-1"><strong>Job Type:</strong> {{ job.job_type }}</p>
     <p class="mb-2"><strong>Salary:</strong> {{ job.currency }} {{ job.salary }}</p>
-    <a href="/job/{{ job._id }}/apply" class="btn btn-outline-primary btn-sm">Apply Now</a>
+
+    <div class="d-flex justify-content-between">
+      <a href="/job/{{ job._id }}/apply" class="btn btn-outline-primary btn-sm">Apply Now</a>
+      <a href="/job/{{ job._id }}" class="btn btn-outline-secondary btn-sm">View Details</a>
+    </div>
   </div>
 </div>

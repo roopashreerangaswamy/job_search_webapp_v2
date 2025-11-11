@@ -62,6 +62,7 @@ def get_recruiter_by_email(email):
         recruiter['user_id'] = recruiter['_id']
         recruiter['name'] = recruiter.get('name', '')
         recruiter['status'] = recruiter.get('status', 'pending')
+        
     return recruiter
 
 
@@ -83,15 +84,20 @@ def is_recruiter_approved(email):
 
 # ---------------------- JOB MANAGEMENT FOR RECRUITERS ----------------------
 
-def add_job_to_db(recruiter_email, title, location, salary, description):
+def add_job_to_db(recruiter_email, title, company, location, job_type, salary, currency, responsibilities, requirements):
     job = {
         "title": title,
+        "company": company,
         "location": location,
+        "job_type": job_type,
         "salary": salary,
-        "description": description,
+        "currency": currency,
+        "responsibilities": responsibilities,
+        "requirements": requirements,
         "posted_by": recruiter_email
     }
     db.jobs.insert_one(job)
+
 
 def get_jobs_by_recruiter(recruiter_email):
     return list(db.jobs.find({"posted_by": recruiter_email}))

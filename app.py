@@ -57,32 +57,28 @@ def apply_to_job(job_id):
 
 
 
-
-
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("✅ Route triggered with method:", request.method)
     if request.method == 'POST':
+        print("📩 Form data received:", request.form)
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
 
-        # 🚨 Check for empty fields
-        if not email or not password:
-            flash('Please enter both email and password.', 'danger')
-            return redirect('/login')
-
         user = get_user_by_email(email)
+        print("🧾 User fetched from DB:", user)
 
-        # 🚨 Check if user exists and password matches
+        if user:
+            print("🔐 Stored password hash:", user.get('password'))
+            print("🧠 Entered password:", password)
+
         if user and check_password_hash(user['password'], password):
+            print("✅ Password verified successfully!")
             session['user_id'] = str(user.get('_id', ''))
             session['user_name'] = user.get('name', 'User')
             session['role'] = user.get('role', 'user')
-
             flash('Login successful!', 'success')
 
-            # ✅ Redirect based on role
             if session['role'] == 'recruiter':
                 return redirect('/recruiter/dashboard')
             elif session['role'] == 'admin':
@@ -90,10 +86,19 @@ def login():
             else:
                 return redirect('/')
         else:
+            print("❌ Invalid credentials — check hash or user not found")
             flash('Invalid email or password.', 'danger')
             return redirect('/login')
 
     return render_template('login.html')
+
+
+
+
+
+
+
+    
 
     
 
@@ -179,6 +184,7 @@ def recruiter_login():
                     session['recruiter_name'] = recruiter['name']
                     session['role'] = 'recruiter'
                     session['recruiter_status'] = "approved"
+                    session['recruiter_company'] = recruiter.get('company_name', 'Unknown Company')
                     return redirect('/recruiter_dashboard')
                 else:
                     return render_template('recruiter_pending.html', recruiter=recruiter)  
@@ -280,13 +286,18 @@ def add_job():
         return redirect(url_for('recruiter_login'))
 
     title = request.form['title']
+    company = session.get('recruiter_company', 'Unknown Company')
     location = request.form['location']
+    job_type = request.form['job_type']
     salary = request.form['salary']
-    description = request.form['description']
+    currency = request.form['currency']
+    responsibilities = request.form['responsibilities']
+    requirements = request.form['requirements']
 
-    add_job_to_db(session['recruiter_email'], title, location, salary, description)
+    add_job_to_db(session['recruiter_email'], title, company, location, job_type, salary, currency, responsibilities, requirements)
     flash("Job added successfully!", "success")
     return redirect(url_for('recruiter_dashboard'))
+
 
 
 @app.route('/recruiter/delete_job/<job_id>', methods=['POST'])
