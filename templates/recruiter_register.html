@@ -1,24 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Recruiter Signup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recruiter Signup | HireBridge</title>
+  {% include 'bootstrap.html' %}
+  <style>
+    body {
+      background: linear-gradient(to right, #f9fafb, #e9f1ff);
+      padding-top: 70px;
+    }
+    .register-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+    button {
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h2>Recruiter Registration</h2>
-  <form action="{{ url_for('recruiter_register') }}" method="post">
-    <label>Name:</label><br>
-    <input type="text" name="name" required><br><br>
 
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+  {% include 'nav.html' %}
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+  <div class="container">
+    <div class="register-container mt-5">
+      <h2>Recruiter Registration</h2>
 
-    <label>Company Name:</label><br>
-    <input type="text" name="company" required><br><br>
+      <form method="POST" action="{{ url_for('recruiter_register') }}">
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g., Priya Sharma" required>
+        </div>
 
-    <button type="submit">Register</button>
-  </form>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="e.g., priya@company.com" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter a secure password" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Company Name</label>
+          <input type="text" name="company" class="form-control" placeholder="e.g., TechNova Pvt. Ltd." required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+        <div class="text-center mt-3">
+          <p class="text-muted">Already have an account? <a href="{{ url_for('recruiter_login') }}">Login here</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
 </body>
 </html>
