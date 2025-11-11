@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request,redirect,flash, session, url_for
-from database import db,load_jobs_from_db , load_job_from_db, add_application_to_db, add_user_to_db, get_user_by_email, add_pending_recruiter_to_db, get_pending_recruiters,update_recruiter_status, is_recruiter_approved, get_recruiter_by_email
+from database import db,load_jobs_from_db , load_job_from_db, add_application_to_db, add_user_to_db, get_user_by_email, add_pending_recruiter_to_db, add_job_to_db,get_jobs_by_recruiter, delete_job, get_applications_for_job
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy.exc
 import os
@@ -25,23 +25,16 @@ def list_jobs():
 
 
 
-@app.route('/job/<id>')
-def show_job(id):
-    job = load_job_from_db(id)
-    if not job:
-        return "Not Found", 404
-    return render_template('jobpage.html', job=job)
 
 
-
-@app.route("/job/<int:id>/apply", methods=["GET", "POST"])
-def apply_to_job(id):
+@app.route("/job/<job_id>/apply", methods=["GET", "POST"])
+def apply_to_job(job_id):
     # ✅ Step 1: Check if user is logged in
     if 'user_id' not in session:
         flash("Please log in to apply for jobs.", "warning")
         return redirect('/login')
 
-    job = load_job_from_db(id)
+    job = load_job_from_db(job_id)
     if not job:
         return "Job not found", 404
 
@@ -55,11 +48,21 @@ def apply_to_job(id):
             "workexp": request.form.get("workexp"),
             "reason": request.form["reason"],
         }
-        add_application_to_db(id, application_data)
+        add_application_to_db(job_id, application_data)
         return render_template("application_submitted.html", application=application_data, job=job)
 
     # ✅ Step 3: Show form if GET request
     return render_template("application_form.html", job=job)
+
+
+
+@app.route('/job/<id>')
+def show_job(id):
+    job = load_job_from_db(id)
+    if not job:
+        return "Not Found", 404
+    return render_template('jobpage.html', job=job)
+
 
 
 
@@ -201,6 +204,17 @@ def admin_login():
     return render_template('admin_login.html', error=error)
 
 
+if not db.admins.find_one({"email": "admin@hirebridge.com"}):
+    hashed = generate_password_hash("admin123")
+    db.admins.insert_one({
+        "name": "Super Admin",
+        "email": "admin@hirebridge.com",
+        "password": hashed
+    })
+    print("✅ Admin account created: admin@hirebridge.com / admin123")
+
+
+
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
@@ -242,7 +256,57 @@ def recruiter_dashboard():
         flash("Access denied. Only approved recruiters can view this page.", "danger")
         return redirect(url_for('recruiter_login'))
 
-    return render_template('recruiter_dashboard.html', name=session.get('user_name'))
+    recruiter_email = session.get('recruiter_email')
+    jobs = get_jobs_by_recruiter(recruiter_email)
+
+    # ✅ Convert ObjectId to string for template rendering
+    for job in jobs:
+        job['_id'] = str(job['_id'])
+
+    return render_template('recruiter_dashboard.html', jobs=jobs)
+
+
+
+# ---------------------- RECRUITER DASHBOARD ACTIONS ----------------------
+
+@app.route('/recruiter/add_job', methods=['POST'])
+def add_job():
+    if session.get('role') != 'recruiter' or session.get('recruiter_status') != 'approved':
+        flash("Access denied.", "danger")
+        return redirect(url_for('recruiter_login'))
+
+    title = request.form['title']
+    location = request.form['location']
+    salary = request.form['salary']
+    description = request.form['description']
+
+    add_job_to_db(session['recruiter_email'], title, location, salary, description)
+    flash("Job added successfully!", "success")
+    return redirect(url_for('recruiter_dashboard'))
+
+
+@app.route('/recruiter/delete_job/<job_id>', methods=['POST'])
+def delete_job_route(job_id):
+    if session.get('role') != 'recruiter' or session.get('recruiter_status') != 'approved':
+        flash("Access denied.", "danger")
+        return redirect(url_for('recruiter_login'))
+
+    delete_job(job_id, session['recruiter_email'])
+    flash("Job deleted successfully!", "info")
+    return redirect(url_for('recruiter_dashboard'))
+
+
+@app.route('/recruiter/view_applications/<job_id>')
+def view_applications(job_id):
+    if session.get('role') != 'recruiter' or session.get('recruiter_status') != 'approved':
+        flash("Access denied.", "danger")
+        return redirect(url_for('recruiter_login'))
+
+    # ✅ Fetch job details
+    job = db.jobs.find_one({"_id": ObjectId(job_id)})  # or {"id": int(job_id)} if you use integers
+    applications = get_applications_for_job(job_id)
+
+    return render_template('recruiter_applications.html', job=job, applications=applications)
 
 
 

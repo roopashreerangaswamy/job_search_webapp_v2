@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Applications</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/recruiter_dashboard">HireBridge Recruiter</a>
+      <div class="d-flex">
+        <a href="/recruiter_dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+        <a href="/logout" class="btn btn-outline-danger btn-sm">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5">
+    <h2 class="mb-4 text-center">Applications for {{ job.title }}</h2>
+
+    {% if applications %}
+      <table class="table table-hover bg-white shadow-sm rounded">
+        <thead class="table-dark">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>LinkedIn</th>
+            <th>Education</th>
+            <th>Experience</th>
+            <th>Reason</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+            <tr>
+              <td>{{ app.name }}</td>
+              <td>{{ app.email }}</td>
+              <td>
+                {% if app.linkedin %}
+                  <a href="{{ app.linkedin }}" target="_blank">Profile</a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ app.education }}</td>
+              <td>{{ app.workexp }}</td>
+              <td>{{ app.reason }}</td>
+              <td>
+                <form action="{{ url_for('delete_application', app_id=app._id) }}" method="POST" style="display:inline;">
+                  <button class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info text-center">No applications yet for this job.</div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

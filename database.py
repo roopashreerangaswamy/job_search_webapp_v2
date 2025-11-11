@@ -7,15 +7,20 @@ client = MongoClient(MONGO_URI)
 db = client["hirebridge"]
 
 # ---------------------- JOB FUNCTIONS ----------------------
-
 def load_jobs_from_db():
-    return list(db.jobs.find({}, {"_id": 0}))
+    jobs = list(db.jobs.find({}))
+    for job in jobs:
+        job["_id"] = str(job["_id"])  # Convert ObjectId to string for HTML templates
+    return jobs
 
-def load_job_from_db(id):
-    return db.jobs.find_one({"id": int(id)}, {"_id": 0})
+def load_job_from_db(job_id):
+    try:
+        return db.jobs.find_one({"_id": ObjectId(job_id)})
+    except Exception:
+        return None
 
 def add_application_to_db(job_id, data):
-    data["job_id"] = int(job_id)
+    data["job_id"] = str(job_id)  # store as string for consistency
     db.applications.insert_one(data)
 
 # ---------------------- USER FUNCTIONS ----------------------
@@ -73,3 +78,26 @@ def update_recruiter_status(recruiter_id, new_status):
 def is_recruiter_approved(email):
     recruiter = db.recruiters.find_one({"email": email})
     return recruiter and recruiter["status"] == "approved"
+
+
+
+# ---------------------- JOB MANAGEMENT FOR RECRUITERS ----------------------
+
+def add_job_to_db(recruiter_email, title, location, salary, description):
+    job = {
+        "title": title,
+        "location": location,
+        "salary": salary,
+        "description": description,
+        "posted_by": recruiter_email
+    }
+    db.jobs.insert_one(job)
+
+def get_jobs_by_recruiter(recruiter_email):
+    return list(db.jobs.find({"posted_by": recruiter_email}))
+
+def delete_job(job_id, recruiter_email):
+    db.jobs.delete_one({"_id": ObjectId(job_id), "posted_by": recruiter_email})
+
+def get_applications_for_job(job_id):
+    return list(db.applications.find({"job_id":job_id}))
