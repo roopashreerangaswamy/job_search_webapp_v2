@@ -83,13 +83,20 @@
   <section id="jobs" class="container my-5">
     <h2 class="text-center mb-4">Latest Openings</h2>
     <div class="row g-4">
-      {% for job in jobs %}
+      {% for job in jobs[:3] %}
         {% include 'jobitem.html' %}
       {% else %}
         <p class="text-center text-muted">No jobs posted yet. Check back soon!</p>
       {% endfor %}
     </div>
+
+    {% if jobs|length > 3 %}
+    <div class="text-center mt-4">
+      <a href="{{ url_for('all_jobs') }}" class="btn btn-brand">View All Jobs</a>
+    </div>
+    {% endif %}
   </section>
+
 
   
 

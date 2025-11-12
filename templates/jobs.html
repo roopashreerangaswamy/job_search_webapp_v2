@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include 'bootstrap.html' %}
+  <title>All Jobs – HireBridge</title>
+</head>
+<body>
+  {% include 'nav.html' %}
+
+  <section class="container my-5">
+    <h2 class="text-center mb-4">All Job Openings</h2>
+    <div class="row g-4">
+      {% for job in jobs %}
+        {% include 'jobitem.html' %}
+      {% else %}
+        <p class="text-center text-muted">No jobs available at the moment.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% include 'footer.html' %}
+</body>
+</html>

@@ -129,6 +129,14 @@ def show_job(id):
     return render_template('jobpage.html', job=job)
 
 
+
+@app.route('/jobs')
+def all_jobs():
+    jobs = load_jobs_from_db()
+    return render_template('jobs.html', jobs=jobs)
+
+
+
 @app.route('/for_recruiters')
 def for_recruiters():
     return render_template('for_recruiters.html')
