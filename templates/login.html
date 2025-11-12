@@ -10,16 +10,39 @@
     }
 
     .login-container {
-      max-width: 420px;
+      max-width: 400px;
       margin: 60px auto;
-      padding: 35px;
-      border-radius: 10px;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
       background-color: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .alert {
       margin-bottom: 20px;
+    }
+
+    .form-label {
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background-color: #198754;
+      border-color: #198754;
+    }
+
+    .btn-primary:hover {
+      background-color: #157347;
+      border-color: #146c43;
+    }
+
+    a.text-link {
+      color: #198754;
+      text-decoration: none;
+    }
+
+    a.text-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -30,7 +53,7 @@
   <main class="flex-fill">
     <div class="container">
       <div class="login-container">
-        <h3 class="text-center mb-4 text-primary fw-bold">Login to HireBridge</h3>
+        <h2 class="text-center mb-4">Login to Your Account</h2>
 
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -60,7 +83,7 @@
 
           <p class="text-center mt-3 mb-0 text-muted">
             Don’t have an account?
-            <a href="{{ url_for('register') }}" class="text-decoration-none">Register here</a>
+            <a href="{{ url_for('register') }}" class="text-link">Register here</a>
           </p>
         </form>
       </div>
@@ -68,6 +91,5 @@
   </main>
 
   {% include 'footer.html' %}
-
 </body>
 </html>

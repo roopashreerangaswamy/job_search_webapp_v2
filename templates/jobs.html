@@ -3,12 +3,65 @@
 <head>
   {% include 'bootstrap.html' %}
   <title>All Jobs – HireBridge</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #f8f9fa;
+    }
+
+    /* Header banner */
+    .page-header {
+      background: url('/static/banner.jpg') center/cover no-repeat;
+      color: #fff;
+      padding: 170px 20px 100px; /* top padding increased for navbar overlap */
+      text-align: center;
+      border-radius: 0;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+
+    /* Subtle dark overlay for contrast */
+    .page-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 0;
+    }
+
+    .page-header h2,
+    .page-header p {
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-header h2 {
+      font-size: 2.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: #f1f1f1;
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
   {% include 'nav.html' %}
 
+  <!-- Full-width banner right below navbar -->
+  <section class="container-fluid px-0">
+    <div class="page-header">
+      <h2>All Job Openings</h2>
+      <p>Discover your next opportunity — find roles that fit your skills and passion.</p>
+    </div>
+  </section>
+
   <section class="container my-5">
-    <h2 class="text-center mb-4">All Job Openings</h2>
     <div class="row g-4">
       {% for job in jobs %}
         {% include 'jobitem.html' %}
